@@ -17,32 +17,40 @@ t1 = 645
 t2 = 601
 numberOfIntervals = 10
 
-srcData.sort()
-T_average = sum(srcData) / len(srcData)
+correctValues = True if gamma < 1 and gamma > 0 and len(
+    srcData) > 0 and numberOfIntervals > 0 else False
+if correctValues:
+    srcData.sort()
+    T_average = sum(srcData) / len(srcData)
 
-h = srcData[-1] / numberOfIntervals
-intervalValues = [list(filter(lambda x: x > i*h and x < (i+1)*h, srcData)) for i, x in enumerate([
-    None] * numberOfIntervals)]
+    h = srcData[-1] / numberOfIntervals
+    intervalValues = [list(filter(lambda x: x > i*h and x < (i+1)*h, srcData)) for i, x in enumerate([
+        None] * numberOfIntervals)]
 
-fi = list(map(lambda x: len(x) / (len(srcData) * h), intervalValues))
+    fi = list(map(lambda x: len(x) / (len(srcData) * h), intervalValues))
 
-p = []
-for i in range(len(fi)):
-    p.append(1 - ((fi[i] * h) + (1 - p[i-1] if i > 0 else 0)))
+    p = []
+    for i in range(len(fi)):
+        p.append(1 - ((fi[i] * h) + (1 - p[i-1] if i > 0 else 0)))
 
-t = 0 + h * ((1-gamma)/(1-p[0]))
+    t = 0 + h * ((1-gamma)/(1-p[0]))
 
-arr = [None] * math.ceil(t1 / h)
-t1Interval = math.ceil(t1 / h)
-pT1 = 1 - reduce(lambda x, y: x + y, [fi[i] * h if i < (t1Interval - 1) else (t1 - h * (t1Interval-1))*fi[i] for i, x in enumerate([
-    None] * t1Interval)], 0)
+    arr = [None] * math.ceil(t1 / h)
+    t1Interval = math.ceil(t1 / h)
+    pT1 = 1 - reduce(lambda x, y: x + y, [fi[i] * h if i < (t1Interval - 1) else (t1 - h * (t1Interval-1))*fi[i] for i, x in enumerate([
+        None] * t1Interval)], 0)
 
-fiList = [0]
-pList = [1]
-i = 0
-index = 0
-λ = fi[math.ceil(t2 / h) - 1] / pT1
+    i = 0
+    index = 0
+    λ = fi[math.ceil(t2 / h) - 1] / pT1
 
-print("T({}) = {} \n"
-      "Non-failure for {} = {} \n"
-      "λ({}) = {}".format(gamma, t, t1, pT1, t2, λ))
+    print("Intervals")
+    for i in range(numberOfIntervals):
+        print("\t {} -- {}".format(i * h, (i + 1) * h))
+    print("fi:", end=" ")
+
+    print("T({:.2f}) = {:.2f} \n"
+          "Non-failure for {:.2f} = {:.5f} \n"
+          "λ({}) = {:.7f}".format(gamma, t, t1, pT1, t2, λ))
+else:
+    print("You entered wrong data. Check your input and try again")
