@@ -31,9 +31,19 @@ if correctValues:
 
     p = []
     for i in range(len(fi)):
-        p.append(1 - ((fi[i] * h) + (1 - p[i-1] if i > 0 else 0)))
+        p.append(1 - ((fi[i] * h) + (1 - p[i - 1] if i > 0 else 0)))
 
-    t = 0 + h * ((1-gamma)/(1-p[0]))
+    pIndex = 0
+    for i in range(len(p)):
+        if gamma <= p[i] and gamma > p[i + 1]:
+            pIndex = i
+            break
+
+    if (pIndex == 0):
+        t = 0 + h * ((1 - gamma) / (1 - p[0]))
+    else:
+        t = intervalValues[pIndex][0] + h * \
+            ((p[pIndex+1]-gamma)/(p[pIndex+1]-p[pIndex]))
 
     arr = [None] * math.ceil(t1 / h)
     t1Interval = math.ceil(t1 / h)
@@ -47,10 +57,18 @@ if correctValues:
     print("Intervals")
     for i in range(numberOfIntervals):
         print("\t {} -- {}".format(i * h, (i + 1) * h))
-    print("fi:", end=" ")
 
-    print("T({:.2f}) = {:.2f} \n"
+    print("T average: {} \n"
+          "T({:.2f}) = {:.2f} \n"
           "Non-failure for {:.2f} = {:.5f} \n"
-          "λ({}) = {:.7f}".format(gamma, t, t1, pT1, t2, λ))
+          "λ({}) = {:.7f}".format(T_average, gamma, t, t1, pT1, t2, λ))
 else:
     print("You entered wrong data. Check your input and try again")
+
+print("p:")
+for i in p:
+    print("{:.3f}".format(i))
+print('======================')
+print("f:")
+for i in fi:
+    print("{:.5f}".format(i))
